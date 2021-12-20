@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Metal+Mania&family=Roboto+Slab&family=Rock+Salt&display=swap');
+/*
+
+font-family: 'Roboto Slab', serif;
+
+*/
+
+.title{
+    width: 70%;
+    margin: 0 auto;
+    h1{
+        font-family: 'Metal Mania', cursive;
+        font-size: 2rem;
+        color: #000;
+        text-shadow: 0 0 10px #fff;
+    }
+    h3{
+        font-family: 'Rock Salt', cursive;
+        font-size: 1rem;
+        color: #000;
+        text-shadow: 0 0 10px #fff;
+    }
+}
+
+.canvasContainer{
+    width: 100vw;
+    height: auto;
+    padding: 1rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
