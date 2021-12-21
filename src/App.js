@@ -1,5 +1,5 @@
 import React from 'react';
-//import Particle from './util/particle.js';
+import Particle from './util/particle.js';
 import p5 from 'p5';
 
 class App extends React.Component {
@@ -13,12 +13,14 @@ class App extends React.Component {
             textColor: '#000000',
             backgroundColor: '#ffffff',
             fontSize: 120,
+            flowFieldFactor: 4,
+            flowFieldSeed: 1,
             particleStartSize: 10,
             particleEndSize: 0,
             particleLifeTime: 1,
             particleDensity: 10,
             scale: 10,
-            mirrorFlowFieldX: false,
+            mirrorFlowFieldX: true,
             mirroFlowFieldY: false,
         }
         this.changed = true;
@@ -28,30 +30,60 @@ class App extends React.Component {
         let particles = []
         let flowField = []
         let cols, rows;
-        let t = 0;
+
         const setupParticles = () => {
             for (let i = 0; i < this.state.particleDensity; i++) {
-                //let p = new Particle(0, 0, this.state.particleLifeTime, this.state.particleStartSize, this.state.particleEndSize, p5.color(this.state.textColor));
-                //particles.push(p)
+                let p = new Particle(p5, 0, 0, this.state.particleLifeTime, this.state.particleStartSize, this.state.particleEndSize, p5.color(this.state.textColor));
+                particles.push(p)
             }
         }
 
         const setupFlowField = () => {
+            p5.noiseSeed(this.state.flowFieldSeed)
             cols = p5.floor(p5.width / this.state.scale);
             rows = p5.floor(p5.height / this.state.scale);
             flowField = new Array(cols * rows);
-            for (let i = 0; i < flowField.length; i++) {
-                flowField[i] = p5.createVector(0, 0);
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < cols; x++) {
+                    const index = x + y * cols;
+                    const angle = p5.noise(x * 0.1, y * 0.1) * p5.TWO_PI * this.state.flowFieldFactor;
+                    flowField[index] = p5.createVector(p5.cos(angle), p5.sin(angle));
+                }
             }
+
+            if (this.state.mirrorFlowFieldX) {
+                const halfCols = p5.floor(cols / 2);
+                for (let y = 0; y < rows; y++) {
+                    for (let x = 0; x < halfCols; x++) {
+                        const index = x + y * cols;
+                        const mirroX = (-x + cols);
+                        const mirroIndex = mirroX + y * cols;
+                        flowField[mirroIndex] = flowField[index]
+                    }
+                }
+            }
+
+            if (this.state.mirroFlowFieldY) {
+                const halfRows = p5.floor(rows / 2);
+                for (let y = 0; y < rows; y++) {
+                    for (let x = 0; x < cols; x++) {
+                        const index = x + y * cols;
+                        const mirroY = (-y + rows);
+                        const mirroIndex = x + mirroY * cols;
+                        flowField[mirroIndex] = flowField[index]
+                    }
+                }
+            }
+
+
         }
 
         const drawFlowField = () => {
             for (let y = 0; y < rows; y++) {
                 for (let x = 0; x < cols; x++) {
                     const index = x + y * cols;
-                    const angle = p5.noise(x * 0.1, y * 0.1) * p5.TWO_PI * t;
-                    const v = p5.createVector(p5.cos(angle), p5.sin(angle));
-                    p5.stroke(0);
+                    const v = flowField[index];
+                    p5.stroke(this.state.textColor);
                     p5.push();
                     p5.translate(x * this.state.scale, y * this.state.scale);
                     p5.rotate(v.heading());
@@ -80,10 +112,10 @@ class App extends React.Component {
             if (this.changed) {
                 reset();
                 this.changed = false;
+                drawFlowField();
+            }else{
+
             }
-            drawFlowField();
-            t = p5.sin(p5.frameCount * 0.01) * 0.5 + 0.5;
-            this.changed = true;
         };
 
     }
@@ -93,56 +125,66 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        this.myP5 = new p5(this.Sketch, this.myRef.current)
+        this.myP5 = new p5(this.Sketch, this.myRef.current);
     }
 
     AlterarTexto = (event) => {
-        this.setState({ text: event.target.value })
+        this.setState({ text: event.target.value });
         this.changed = true;
     }
 
     AlterarTextoCor = (event) => {
-        this.setState({ textColor: event.target.value })
+        this.setState({ textColor: event.target.value });
         this.changed = true;
     }
 
     AlterarFundoCor = (event) => {
-        this.setState({ backgroundColor: event.target.value })
+        this.setState({ backgroundColor: event.target.value });
+        this.changed = true;
+    }
+
+    AlterarFlowFieldFactor = (event) => {
+        this.setState({ flowFieldFactor: event.target.value });
+        this.changed = true;
+    }
+
+    AlterarFlowFieldSeed = (event) => {
+        this.setState({ flowFieldSeed: event.target.value });
         this.changed = true;
     }
 
     AlterarTamanhoFonte = (event) => {
-        this.setState({ fontSize: event.target.value })
+        this.setState({ fontSize: event.target.value });
         this.changed = true;
     }
 
     AlterarParticulaTamanhoInicial = (event) => {
-        this.setState({ particleStartSize: event.target.value })
+        this.setState({ particleStartSize: event.target.value });
         this.changed = true;
     }
 
     AlterarParticulaTamanhoFinal = (event) => {
-        this.setState({ particleEndSize: event.target.value })
+        this.setState({ particleEndSize: event.target.value });
         this.changed = true;
     }
 
     AlterarParticulaVida = (event) => {
-        this.setState({ particleLifeTime: event.target.value })
+        this.setState({ particleLifeTime: event.target.value });
         this.changed = true;
     }
 
     AlterarParticulaDensidade = (event) => {
-        this.setState({ particleDensity: event.target.value })
+        this.setState({ particleDensity: event.target.value });
         this.changed = true;
     }
 
     AlterarFlowFieldX = (event) => {
-        this.setState({ mirrorFlowFieldX: event.target.checked })
+        this.setState({ mirrorFlowFieldX: event.target.checked });
         this.changed = true;
     }
 
     AlterarFlowFieldY = (event) => {
-        this.setState({ mirroFlowFieldY: event.target.checked })
+        this.setState({ mirroFlowFieldY: event.target.checked });
         this.changed = true;
     }
 
@@ -183,7 +225,7 @@ class App extends React.Component {
                     </div>
 
                     <div className="row">
-                        <div className="col-12">
+                        <div className="col-6">
                             <div class="form-group">
                                 <lable>Text Color:</lable>
                                 <input type="color"
@@ -195,12 +237,9 @@ class App extends React.Component {
                                 />
                             </div>
                         </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-12">
+                        <div className="col-6">
                             <div class="form-group">
-                                <lable>background Color:</lable>
+                                <lable>Background Color:</lable>
                                 <input type="color"
                                     class="form-control form-control-color"
                                     placeholder="Enter background color"
@@ -215,6 +254,44 @@ class App extends React.Component {
                     <div className="row">
                         <div className="col-12">
                             <div class="form-group">
+                                <lable>Flow Field Factor:</lable>
+                                <input type="range"
+                                    class="form-range"
+                                    id="flowFieldFactor"
+                                    min={1}
+                                    max={6}
+                                    step={0.01}
+                                    placeholder="Enter font size"
+                                    onChange={this.AlterarFlowFieldFactor}
+                                    value={this.state.flowFieldFactor}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="row">
+                        <div className="col-12">
+                            <div class="form-group">
+                                <lable>Flow Field Seed:</lable>
+                                <input type="range"
+                                    class="form-range"
+                                    id="flowFieldSeed"
+                                    min={1}
+                                    max={100}
+                                    step={1}
+                                    placeholder="Enter font size"
+                                    onChange={this.AlterarFlowFieldSeed}
+                                    value={this.state.flowFieldSeed}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+
+                    {/*
+                    <div className="row">
+                        <div className="col-12">
+                            <div class="form-group">
                                 <lable>Font Size:</lable>
                                 <input type="number"
                                     class="form-control form-control-sm"
@@ -225,6 +302,7 @@ class App extends React.Component {
                             </div>
                         </div>
                     </div>
+                     */}
 
                     <div className="row">
                         <div className="col-12">
@@ -295,7 +373,7 @@ class App extends React.Component {
                                     placeholder="Enter particle density"
                                     onChange={this.AlterarFlowFieldX}
                                     id="mirrorFlowFieldX"
-                                    value={this.state.mirrorFlowFieldX}
+                                    checked={this.state.mirrorFlowFieldX}
                                 />
                             </div>
                         </div>
@@ -310,7 +388,8 @@ class App extends React.Component {
                                         placeholder="Enter particle density"
                                         onChange={this.AlterarFlowFieldY}
                                         id="mirroFlowFieldY"
-                                        value={this.state.mirroFlowFieldY}
+
+                                        checked={this.state.mirroFlowFieldY}
                                     />
                                     <label className="form-check-label" htmlFor="mirroFlowFieldY">Mirro Flow Field in y axis:</label>
                                 </div>
