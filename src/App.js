@@ -26,11 +26,38 @@ class App extends React.Component {
 
     Sketch = (p5) => {
         let particles = []
-
+        let flowField = []
+        let cols, rows;
+        let t = 0;
         const setupParticles = () => {
             for (let i = 0; i < this.state.particleDensity; i++) {
                 //let p = new Particle(0, 0, this.state.particleLifeTime, this.state.particleStartSize, this.state.particleEndSize, p5.color(this.state.textColor));
                 //particles.push(p)
+            }
+        }
+
+        const setupFlowField = () => {
+            cols = p5.floor(p5.width / this.state.scale);
+            rows = p5.floor(p5.height / this.state.scale);
+            flowField = new Array(cols * rows);
+            for (let i = 0; i < flowField.length; i++) {
+                flowField[i] = p5.createVector(0, 0);
+            }
+        }
+
+        const drawFlowField = () => {
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < cols; x++) {
+                    const index = x + y * cols;
+                    const angle = p5.noise(x * 0.1, y * 0.1) * p5.TWO_PI * t;
+                    const v = p5.createVector(p5.cos(angle), p5.sin(angle));
+                    p5.stroke(0);
+                    p5.push();
+                    p5.translate(x * this.state.scale, y * this.state.scale);
+                    p5.rotate(v.heading());
+                    p5.line(0, 0, this.state.scale, 0);
+                    p5.pop();
+                }
             }
         }
 
@@ -40,8 +67,8 @@ class App extends React.Component {
             p5.textAlign(p5.CENTER, p5.CENTER);
             p5.fill(this.state.textColor);
             p5.text(this.state.text, p5.width / 2, p5.height / 2);
+            setupFlowField();
             setupParticles();
-
         }
 
         p5.setup = () => {
@@ -54,7 +81,9 @@ class App extends React.Component {
                 reset();
                 this.changed = false;
             }
-
+            drawFlowField();
+            t = p5.sin(p5.frameCount * 0.01) * 0.5 + 0.5;
+            this.changed = true;
         };
 
     }
