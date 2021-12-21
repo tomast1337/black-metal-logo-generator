@@ -17,7 +17,7 @@ class App extends React.Component {
             flowFieldSeed: 1,
             particleStartSize: 10,
             particleEndSize: 0,
-            particleLifeTime: 1,
+            particleLifeTime: 100,
             particleDensity: 10,
             scale: 10,
             mirrorFlowFieldX: true,
@@ -32,9 +32,18 @@ class App extends React.Component {
         let cols, rows;
 
         const setupParticles = () => {
-            for (let i = 0; i < this.state.particleDensity; i++) {
-                let p = new Particle(p5, 0, 0, this.state.particleLifeTime, this.state.particleStartSize, this.state.particleEndSize, p5.color(this.state.textColor));
-                particles.push(p)
+            particles = [];
+            for (let i = 0; i < this.state.particleDensity*10; i++) {
+                let x = p5.random(p5.width)
+                let y = p5.random(p5.height)
+                let p = new Particle(p5,
+                    x,
+                    y,
+                    this.state.particleLifeTime,
+                    this.state.particleStartSize,
+                    this.state.particleEndSize,
+                    p5.color(this.state.textColor));
+                particles.push(p);
             }
         }
 
@@ -113,8 +122,14 @@ class App extends React.Component {
                 reset();
                 this.changed = false;
                 drawFlowField();
-            }else{
-
+            } else {
+                for (let i = 0; i < particles.length; i++) {
+                    if (!particles[i].isDead()) {
+                        particles[i].applyForce(flowField, this.state.scale, cols);
+                        particles[i].update();
+                        particles[i].draw();
+                    }
+                }
             }
         };
 
@@ -212,10 +227,10 @@ class App extends React.Component {
                 <div className='controls'>
                     <div className="row">
                         <div className="col-12">
-                            <div class="form-group">
+                            <div className="form-group">
                                 <lable>Text:</lable>
                                 <input type="text"
-                                    class="form-control form-control-sm"
+                                    className="form-control form-control-sm"
                                     placeholder="Enter text"
                                     onChange={this.AlterarTexto}
                                     value={this.state.text}
@@ -226,10 +241,10 @@ class App extends React.Component {
 
                     <div className="row">
                         <div className="col-6">
-                            <div class="form-group">
+                            <div className="form-group">
                                 <lable>Text Color:</lable>
                                 <input type="color"
-                                    class="form-control form-control-color"
+                                    className="form-control form-control-color"
                                     placeholder="Enter text color"
                                     onChange={this.AlterarTextoCor}
                                     id='textColor'
@@ -238,10 +253,10 @@ class App extends React.Component {
                             </div>
                         </div>
                         <div className="col-6">
-                            <div class="form-group">
+                            <div className="form-group">
                                 <lable>Background Color:</lable>
                                 <input type="color"
-                                    class="form-control form-control-color"
+                                    className="form-control form-control-color"
                                     placeholder="Enter background color"
                                     onChange={this.AlterarFundoCor}
                                     id='backgroundColor'
@@ -252,11 +267,11 @@ class App extends React.Component {
                     </div>
 
                     <div className="row">
-                        <div className="col-12">
-                            <div class="form-group">
+                        <div className="col-6">
+                            <div className="form-group">
                                 <lable>Flow Field Factor:</lable>
                                 <input type="range"
-                                    class="form-range"
+                                    className="form-range"
                                     id="flowFieldFactor"
                                     min={1}
                                     max={6}
@@ -267,15 +282,13 @@ class App extends React.Component {
                                 />
                             </div>
                         </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-12">
-                            <div class="form-group">
+                        <div className="col-6">
+                            <div className="form-group">
                                 <lable>Flow Field Seed:</lable>
-                                <input type="range"
-                                    class="form-range"
+                                <input
                                     id="flowFieldSeed"
+                                    type="range"
+                                    className="form-range"
                                     min={1}
                                     max={100}
                                     step={1}
@@ -288,13 +301,14 @@ class App extends React.Component {
                     </div>
 
 
+
                     {/*
                     <div className="row">
                         <div className="col-12">
-                            <div class="form-group">
+                            <div className="form-group">
                                 <lable>Font Size:</lable>
                                 <input type="number"
-                                    class="form-control form-control-sm"
+                                    className="form-control form-control-sm"
                                     placeholder="Enter font size"
                                     onChange={this.AlterarTamanhoFonte}
                                     value={this.state.fontSize}
@@ -305,11 +319,14 @@ class App extends React.Component {
                      */}
 
                     <div className="row">
-                        <div className="col-12">
-                            <div class="form-group">
+                        <div className="col-6">
+                            <div className="form-group">
                                 <lable>Particle Start Size:</lable>
-                                <input type="number"
-                                    class="form-control form-control-sm"
+                                <input type="range"
+                                    className="form-range"
+                                    min={0}
+                                    max={50}
+                                    step={1}
                                     placeholder="Enter particle start size"
                                     onChange={this.AlterarParticulaTamanhoInicial}
                                     id='particleStartSize'
@@ -317,14 +334,14 @@ class App extends React.Component {
                                 />
                             </div>
                         </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-12">
-                            <div class="form-group">
+                        <div className="col-6">
+                            <div className="form-group">
                                 <lable>Particle End Size:</lable>
-                                <input type="number"
-                                    class="form-control form-control-sm"
+                                <input type="range"
+                                    className="form-range"
+                                    min={0}
+                                    max={200}
+                                    step={1}
                                     placeholder="Enter particle end size"
                                     onChange={this.AlterarParticulaTamanhoFinal}
                                     id='particleEndSize'
@@ -334,12 +351,16 @@ class App extends React.Component {
                         </div>
                     </div>
 
+
                     <div className="row">
                         <div className="col-12">
-                            <div class="form-group">
+                            <div className="form-group">
                                 <lable>Particle Life Time:</lable>
-                                <input type="number"
-                                    class="form-control form-control-sm"
+                                <input type="range"
+                                    className="form-range"
+                                    min={0}
+                                    max={200}
+                                    step={1}
                                     placeholder="Enter particle life time"
                                     onChange={this.AlterarParticulaVida}
                                     id='particleLifeTime'
@@ -351,10 +372,13 @@ class App extends React.Component {
 
                     <div className="row">
                         <div className="col-12">
-                            <div class="form-group">
+                            <div className="form-group">
                                 <lable>Particle Density:</lable>
-                                <input type="number"
-                                    class="form-control form-control-sm"
+                                <input type="range"
+                                    className="form-range"
+                                    min={1}
+                                    max={100}
+                                    step={1}
                                     placeholder="Enter particle density"
                                     onChange={this.AlterarParticulaDensidade}
                                     id='particleDensity'
@@ -365,11 +389,11 @@ class App extends React.Component {
                     </div>
 
                     <div className="row">
-                        <div className="col-12">
-                            <div class="form-check">
+                        <div className="col-6">
+                            <div className="form-check">
                                 <lable for="mirrorFlowFieldX" className="form-check-label">Mirro Flow Field in x axis:</lable>
                                 <input type="checkbox"
-                                    class="form-check-input"
+                                    className="form-check-input"
                                     placeholder="Enter particle density"
                                     onChange={this.AlterarFlowFieldX}
                                     id="mirrorFlowFieldX"
@@ -377,18 +401,14 @@ class App extends React.Component {
                                 />
                             </div>
                         </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-12">
+                        <div className="col-6">
                             <div className="form-group">
                                 <div className="form-check">
                                     <input type="checkbox"
-                                        class="form-check-input"
+                                        className="form-check-input"
                                         placeholder="Enter particle density"
                                         onChange={this.AlterarFlowFieldY}
                                         id="mirroFlowFieldY"
-
                                         checked={this.state.mirroFlowFieldY}
                                     />
                                     <label className="form-check-label" htmlFor="mirroFlowFieldY">Mirro Flow Field in y axis:</label>
