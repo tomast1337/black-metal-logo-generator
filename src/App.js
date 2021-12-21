@@ -1,5 +1,5 @@
 import React from 'react';
-import Particle from './util/particle.js';
+import Particle from './util/particle';
 import p5 from 'p5';
 
 class App extends React.Component {
@@ -18,7 +18,7 @@ class App extends React.Component {
             particleStartSize: 10,
             particleEndSize: 0,
             particleLifeTime: 100,
-            particleDensity: 10,
+            particleDensity: 40,
             scale: 10,
             mirrorFlowFieldX: true,
             mirroFlowFieldY: false,
@@ -30,20 +30,25 @@ class App extends React.Component {
         let particles = []
         let flowField = []
         let cols, rows;
-
         const setupParticles = () => {
             particles = [];
-            for (let i = 0; i < this.state.particleDensity*10; i++) {
-                let x = p5.random(p5.width)
-                let y = p5.random(p5.height)
-                let p = new Particle(p5,
-                    x,
-                    y,
-                    this.state.particleLifeTime,
-                    this.state.particleStartSize,
-                    this.state.particleEndSize,
-                    p5.color(this.state.textColor));
-                particles.push(p);
+            const density = this.state.particleDensity
+            const textColor = Hex2RGBA(this.state.textColor)
+            for (let y = 0; y < p5.height / density; y++) {
+                for (let x = 0; x < p5.width / density; x++) {
+
+                    let px = x * density
+                    let py = y * density
+                    let p = new Particle(p5,
+                        px,
+                        py,
+                        this.state.particleLifeTime,
+                        this.state.particleStartSize,
+                        this.state.particleEndSize,
+                        p5.color(this.state.textColor));
+                    particles.push(p);
+
+                }
             }
         }
 
@@ -74,7 +79,7 @@ class App extends React.Component {
 
             if (this.state.mirroFlowFieldY) {
                 const halfRows = p5.floor(rows / 2);
-                for (let y = 0; y < rows; y++) {
+                for (let y = 0; y < halfRows; y++) {
                     for (let x = 0; x < cols; x++) {
                         const index = x + y * cols;
                         const mirroY = (-y + rows);
@@ -108,8 +113,16 @@ class App extends React.Component {
             p5.textAlign(p5.CENTER, p5.CENTER);
             p5.fill(this.state.textColor);
             p5.text(this.state.text, p5.width / 2, p5.height / 2);
+
+            //const points = p5.textToPoints(this.state.text, p5.width / 2, p5.height / 2);
+
             setupFlowField();
             setupParticles();
+
+        }
+
+        p5.preload = () => {
+
         }
 
         p5.setup = () => {
@@ -118,10 +131,11 @@ class App extends React.Component {
         };
 
         p5.draw = () => {
+            //console.log(p5.get(p5.mouseX, p5.mouseY))
             if (this.changed) {
                 reset();
                 this.changed = false;
-                drawFlowField();
+                //drawFlowField();
             } else {
                 for (let i = 0; i < particles.length; i++) {
                     if (!particles[i].isDead()) {
@@ -417,6 +431,7 @@ class App extends React.Component {
                         </div>
                     </div>
                 </div>
+
 
             </div>
         )
