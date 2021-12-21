@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+//import Particle from './util/particle.js';
 import p5 from 'p5';
 
 class App extends React.Component {
@@ -8,92 +9,112 @@ class App extends React.Component {
         this.state = {
             wight: 0,
             height: 0,
-            text: 'text',
+            text: 'This is a tesT',
             textColor: '#000000',
             backgroundColor: '#ffffff',
-            particleStartSize: 1,
-            particleEndSize: 1,
+            fontSize: 120,
+            particleStartSize: 10,
+            particleEndSize: 0,
             particleLifeTime: 1,
-            particleDensity: 1,
-            scale : 10,
+            particleDensity: 10,
+            scale: 10,
             mirrorFlowFieldX: false,
             mirroFlowFieldY: false,
         }
+        this.changed = true;
     }
 
     Sketch = (p5) => {
-        let xoff = 0;
-        let yoff = 0;
-        let size = 10;
-        let r = 255;
-        let g = 255;
-        let b = 255;
-        let a = 255 / 10;
+        let particles = []
+
+        const setupParticles = () => {
+            for (let i = 0; i < this.state.particleDensity; i++) {
+                //let p = new Particle(0, 0, this.state.particleLifeTime, this.state.particleStartSize, this.state.particleEndSize, p5.color(this.state.textColor));
+                //particles.push(p)
+            }
+        }
+
+        const reset = () => {
+            p5.background(this.state.backgroundColor);
+            p5.textSize(this.state.fontSize);
+            p5.textAlign(p5.CENTER, p5.CENTER);
+            p5.fill(this.state.textColor);
+            p5.text(this.state.text, p5.width / 2, p5.height / 2);
+            setupParticles();
+
+        }
+
         p5.setup = () => {
             p5.createCanvas(1360, 768);
             p5.background(255);
-
-            xoff = p5.width / 2;
-            yoff = p5.height / 2;
         };
 
         p5.draw = () => {
-            p5.fill(r, g, b, a);
-            p5.stroke(0, 0, 0, 255 / 10);
-            p5.strokeWeight(1);
-
-            xoff += 0.01;
-            yoff += 0.01;
-
-            let x = p5.noise(xoff * 2) * p5.width;
-            let y = p5.noise(yoff * 2) * p5.height;
-            size = p5.noise(xoff) * 80;
-            p5.ellipse(x, y, size, size);
-
-            r = p5.noise(xoff) * 255;
-            g = p5.noise(yoff) * 255;
-            b = p5.noise(xoff, yoff) * 255;
+            if (this.changed) {
+                reset();
+                this.changed = false;
+            }
 
         };
+
     }
+
+    cleanCanvas() {
+        this.myP5.background(255);
+    }
+
     componentDidMount() {
         this.myP5 = new p5(this.Sketch, this.myRef.current)
     }
 
     AlterarTexto = (event) => {
         this.setState({ text: event.target.value })
+        this.changed = true;
     }
 
     AlterarTextoCor = (event) => {
         this.setState({ textColor: event.target.value })
+        this.changed = true;
     }
 
     AlterarFundoCor = (event) => {
         this.setState({ backgroundColor: event.target.value })
+        this.changed = true;
+    }
+
+    AlterarTamanhoFonte = (event) => {
+        this.setState({ fontSize: event.target.value })
+        this.changed = true;
     }
 
     AlterarParticulaTamanhoInicial = (event) => {
         this.setState({ particleStartSize: event.target.value })
+        this.changed = true;
     }
 
     AlterarParticulaTamanhoFinal = (event) => {
         this.setState({ particleEndSize: event.target.value })
+        this.changed = true;
     }
 
     AlterarParticulaVida = (event) => {
         this.setState({ particleLifeTime: event.target.value })
+        this.changed = true;
     }
 
     AlterarParticulaDensidade = (event) => {
         this.setState({ particleDensity: event.target.value })
+        this.changed = true;
     }
 
     AlterarFlowFieldX = (event) => {
         this.setState({ mirrorFlowFieldX: event.target.checked })
+        this.changed = true;
     }
 
     AlterarFlowFieldY = (event) => {
         this.setState({ mirroFlowFieldY: event.target.checked })
+        this.changed = true;
     }
 
     render() {
@@ -126,6 +147,7 @@ class App extends React.Component {
                                     class="form-control form-control-sm"
                                     placeholder="Enter text"
                                     onChange={this.AlterarTexto}
+                                    value={this.state.text}
                                 />
                             </div>
                         </div>
@@ -140,6 +162,7 @@ class App extends React.Component {
                                     placeholder="Enter text color"
                                     onChange={this.AlterarTextoCor}
                                     id='textColor'
+                                    value={this.state.textColor}
                                 />
                             </div>
                         </div>
@@ -154,6 +177,21 @@ class App extends React.Component {
                                     placeholder="Enter background color"
                                     onChange={this.AlterarFundoCor}
                                     id='backgroundColor'
+                                    value={this.state.backgroundColor}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="row">
+                        <div className="col-12">
+                            <div class="form-group">
+                                <lable>Font Size:</lable>
+                                <input type="number"
+                                    class="form-control form-control-sm"
+                                    placeholder="Enter font size"
+                                    onChange={this.AlterarTamanhoFonte}
+                                    value={this.state.fontSize}
                                 />
                             </div>
                         </div>
@@ -168,6 +206,7 @@ class App extends React.Component {
                                     placeholder="Enter particle start size"
                                     onChange={this.AlterarParticulaTamanhoInicial}
                                     id='particleStartSize'
+                                    value={this.state.particleStartSize}
                                 />
                             </div>
                         </div>
@@ -182,6 +221,7 @@ class App extends React.Component {
                                     placeholder="Enter particle end size"
                                     onChange={this.AlterarParticulaTamanhoFinal}
                                     id='particleEndSize'
+                                    value={this.state.particleEndSize}
                                 />
                             </div>
                         </div>
@@ -196,6 +236,7 @@ class App extends React.Component {
                                     placeholder="Enter particle life time"
                                     onChange={this.AlterarParticulaVida}
                                     id='particleLifeTime'
+                                    value={this.state.particleLifeTime}
                                 />
                             </div>
                         </div>
@@ -210,6 +251,7 @@ class App extends React.Component {
                                     placeholder="Enter particle density"
                                     onChange={this.AlterarParticulaDensidade}
                                     id='particleDensity'
+                                    value={this.state.particleDensity}
                                 />
                             </div>
                         </div>
@@ -224,6 +266,7 @@ class App extends React.Component {
                                     placeholder="Enter particle density"
                                     onChange={this.AlterarFlowFieldX}
                                     id="mirrorFlowFieldX"
+                                    value={this.state.mirrorFlowFieldX}
                                 />
                             </div>
                         </div>
@@ -238,6 +281,7 @@ class App extends React.Component {
                                         placeholder="Enter particle density"
                                         onChange={this.AlterarFlowFieldY}
                                         id="mirroFlowFieldY"
+                                        value={this.state.mirroFlowFieldY}
                                     />
                                     <label className="form-check-label" htmlFor="mirroFlowFieldY">Mirro Flow Field in y axis:</label>
                                 </div>

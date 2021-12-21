@@ -1,13 +1,12 @@
-import "p5";
-
+import p5 from "p5";
 
 export default class Particle {
     constructor(x, y, lifeTime, startSize, endSize, color) {
-        this.pos = createVector(x, y);
-        this.lastPos = createVector(x, y);
+        this.pos = p5.createVector(x, y);
+        this.lastPos = p5.createVector(x, y);
 
-        this.vel = createVector(0, 0);
-        this.acc = createVector(0, 0);
+        this.vel = p5.createVector(0, 0);
+        this.acc = p5.createVector(0, 0);
 
         this.lifeTime = lifeTime;
         this.startSize = startSize;
@@ -42,11 +41,10 @@ export default class Particle {
         if (this.isDead()) {
             return;
         }
-        this.size = map(this.lifeTime, 0, this.startSize, this.endSize, 0);
-        stroke(0, 0, 0, 255 / 10);
-        strokeWeight(1);
-        fill(this.color);
-        ellipse(this.pos.x, this.pos.y, this.size, this.size);
+        p5.stroke(0, 0, 0, 255 / 10);
+        p5.strokeWeight(1);
+        p5.fill(this.color);
+        p5.ellipse(this.pos.x, this.pos.y, this.size, this.size);
     }
 
     
