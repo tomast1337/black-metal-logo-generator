@@ -9,10 +9,10 @@ class App extends React.Component {
         this.state = {
             wight: 0,
             height: 0,
-            text: 'This is a tesT',
+            text: 'TEXT',
             textColor: '#000000',
             backgroundColor: '#ffffff',
-            fontSize: 120,
+            fontSize: 240,
             flowFieldFactor: 4,
             flowFieldSeed: 1,
             particleStartSize: 10,
@@ -136,7 +136,7 @@ class App extends React.Component {
             if (this.changed) {
                 reset();
                 this.changed = false;
-                drawFlowField();
+                //drawFlowField();
             } else {
                 for (let i = 0; i < particles.length; i++) {
                     if (!particles[i].isDead()) {
