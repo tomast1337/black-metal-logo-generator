@@ -33,7 +33,6 @@ class App extends React.Component {
         const setupParticles = () => {
             particles = [];
             const density = this.state.particleDensity
-            const textColor = Hex2RGBA(this.state.textColor)
             for (let y = 0; y < p5.height / density; y++) {
                 for (let x = 0; x < p5.width / density; x++) {
 
@@ -72,7 +71,8 @@ class App extends React.Component {
                         const index = x + y * cols;
                         const mirroX = (-x + cols);
                         const mirroIndex = mirroX + y * cols;
-                        flowField[mirroIndex] = flowField[index]
+                        flowField[mirroIndex] = flowField[index].copy()
+                        flowField[mirroIndex].x = -flowField[mirroIndex].x;
                     }
                 }
             }
@@ -84,7 +84,8 @@ class App extends React.Component {
                         const index = x + y * cols;
                         const mirroY = (-y + rows);
                         const mirroIndex = x + mirroY * cols;
-                        flowField[mirroIndex] = flowField[index]
+                        flowField[mirroIndex] = flowField[index].copy()
+                        flowField[mirroIndex].y = -flowField[mirroIndex].y;
                     }
                 }
             }
@@ -135,7 +136,7 @@ class App extends React.Component {
             if (this.changed) {
                 reset();
                 this.changed = false;
-                //drawFlowField();
+                drawFlowField();
             } else {
                 for (let i = 0; i < particles.length; i++) {
                     if (!particles[i].isDead()) {
