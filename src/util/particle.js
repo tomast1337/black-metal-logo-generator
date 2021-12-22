@@ -64,7 +64,6 @@ export default class Particle {
         const x = this.p5.floor(this.pos.x / scale);
         const y = this.p5.floor(this.pos.y / scale);
         const index = x + y * cols;
-        console.log(flowField.length)
         this.acc.add(flowField[index]);
     }
 

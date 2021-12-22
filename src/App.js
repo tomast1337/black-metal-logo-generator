@@ -22,6 +22,7 @@ class App extends React.Component {
             scale: 10,
             mirrorFlowFieldX: true,
             mirroFlowFieldY: false,
+            drawFlowField: false,
         }
         this.changed = true;
     }
@@ -30,9 +31,23 @@ class App extends React.Component {
         let particles = []
         let flowField = []
         let cols, rows;
+        let font;
+        let textPoints = [];
         const setupParticles = () => {
             particles = [];
-            const density = this.state.particleDensity
+            for (let i = 0; i < textPoints.length; i++) {
+                let px = textPoints[i].x;
+                let py = textPoints[i].y;
+                let p = new Particle(p5,
+                    px,
+                    py,
+                    this.state.particleLifeTime,
+                    this.state.particleStartSize,
+                    this.state.particleEndSize,
+                    p5.color(this.state.textColor));
+                particles.push(p);
+            }
+            /*const density = this.state.particleDensity
             for (let y = 0; y < p5.height / density; y++) {
                 for (let x = 0; x < p5.width / density; x++) {
 
@@ -48,7 +63,7 @@ class App extends React.Component {
                     particles.push(p);
 
                 }
-            }
+            }*/
         }
 
         const setupFlowField = () => {
@@ -110,20 +125,20 @@ class App extends React.Component {
 
         const reset = () => {
             p5.background(this.state.backgroundColor);
+            p5.textFont(font);
             p5.textSize(this.state.fontSize);
             p5.textAlign(p5.CENTER, p5.CENTER);
-            p5.fill(this.state.textColor);
-            p5.text(this.state.text, p5.width / 2, p5.height / 2);
-
-            //const points = p5.textToPoints(this.state.text, p5.width / 2, p5.height / 2);
-
+            let x = p5.width / 2;
+            let y =  p5.height / 2;
+            textPoints = [];
+            textPoints = font.textToPoints(this.state.text, x, y);
             setupFlowField();
             setupParticles();
 
         }
 
         p5.preload = () => {
-
+            font = p5.loadFont('./assets/SIMPLIFICA Typeface.ttf');
         }
 
         p5.setup = () => {
@@ -132,11 +147,12 @@ class App extends React.Component {
         };
 
         p5.draw = () => {
-            //console.log(p5.get(p5.mouseX, p5.mouseY))
             if (this.changed) {
                 reset();
                 this.changed = false;
-                //drawFlowField();
+                if (this.state.drawFlowField) {
+                    drawFlowField();
+                }
             } else {
                 for (let i = 0; i < particles.length; i++) {
                     if (!particles[i].isDead()) {
@@ -220,9 +236,24 @@ class App extends React.Component {
         this.changed = true;
     }
 
+    AlterarDrawFlowField = (event) => {
+        this.setState({ drawFlowField: event.target.checked });
+        this.changed = true;
+    }
+
+    AlterarTextX = (event) => {
+        this.setState({ textX: event.target.value });
+        this.changed = true;
+    }
+
+    AlterarTextY = (event) => {
+        this.setState({ textY: event.target.value });
+        this.changed = true;
+    }
+
     render() {
         return (
-            <div id='body' lassName="container page-container">
+            <div id='body'>
 
                 <div className="row">
                     <div className="col-md-12">
@@ -245,7 +276,7 @@ class App extends React.Component {
                     <div className="row">
                         <div className="col-12">
                             <div className="form-group">
-                                <lable>Text:</lable>
+                                <span>Text:</span>
                                 <input type="text"
                                     className="form-control form-control-sm"
                                     placeholder="Enter text"
@@ -259,7 +290,7 @@ class App extends React.Component {
                     <div className="row">
                         <div className="col-6">
                             <div className="form-group">
-                                <lable>Text Color:</lable>
+                                <span>Text Color:</span>
                                 <input type="color"
                                     className="form-control form-control-color"
                                     placeholder="Enter text color"
@@ -271,7 +302,7 @@ class App extends React.Component {
                         </div>
                         <div className="col-6">
                             <div className="form-group">
-                                <lable>Background Color:</lable>
+                                <span>Background Color:</span>
                                 <input type="color"
                                     className="form-control form-control-color"
                                     placeholder="Enter background color"
@@ -286,7 +317,7 @@ class App extends React.Component {
                     <div className="row">
                         <div className="col-6">
                             <div className="form-group">
-                                <lable>Flow Field Factor:</lable>
+                                <span>Flow Field Factor:</span>
                                 <input type="range"
                                     className="form-range"
                                     id="flowFieldFactor"
@@ -299,9 +330,10 @@ class App extends React.Component {
                                 />
                             </div>
                         </div>
+
                         <div className="col-6">
                             <div className="form-group">
-                                <lable>Flow Field Seed:</lable>
+                                <span>Flow Field Seed:</span>
                                 <input
                                     id="flowFieldSeed"
                                     type="range"
@@ -317,28 +349,10 @@ class App extends React.Component {
                         </div>
                     </div>
 
-
-
-                    {/*
-                    <div className="row">
-                        <div className="col-12">
-                            <div className="form-group">
-                                <lable>Font Size:</lable>
-                                <input type="number"
-                                    className="form-control form-control-sm"
-                                    placeholder="Enter font size"
-                                    onChange={this.AlterarTamanhoFonte}
-                                    value={this.state.fontSize}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                     */}
-
                     <div className="row">
                         <div className="col-6">
                             <div className="form-group">
-                                <lable>Particle Start Size:</lable>
+                                <span>Particle Start Size:</span>
                                 <input type="range"
                                     className="form-range"
                                     min={0}
@@ -353,7 +367,7 @@ class App extends React.Component {
                         </div>
                         <div className="col-6">
                             <div className="form-group">
-                                <lable>Particle End Size:</lable>
+                                <span>Particle End Size:</span>
                                 <input type="range"
                                     className="form-range"
                                     min={0}
@@ -372,7 +386,7 @@ class App extends React.Component {
                     <div className="row">
                         <div className="col-12">
                             <div className="form-group">
-                                <lable>Particle Life Time:</lable>
+                                <span>Particle Life Time:</span>
                                 <input type="range"
                                     className="form-range"
                                     min={0}
@@ -390,7 +404,7 @@ class App extends React.Component {
                     <div className="row">
                         <div className="col-12">
                             <div className="form-group">
-                                <lable>Particle Density:</lable>
+                                <span>Particle Density:</span>
                                 <input type="range"
                                     className="form-range"
                                     min={1}
@@ -404,11 +418,10 @@ class App extends React.Component {
                             </div>
                         </div>
                     </div>
-
                     <div className="row">
                         <div className="col-6">
                             <div className="form-check">
-                                <lable for="mirrorFlowFieldX" className="form-check-label">Mirro Flow Field in x axis:</lable>
+                                <span htmlFor="mirrorFlowFieldX" className="form-check-label">Mirro Flow Field in x axis:</span>
                                 <input type="checkbox"
                                     className="form-check-input"
                                     placeholder="Enter particle density"
@@ -428,17 +441,33 @@ class App extends React.Component {
                                         id="mirroFlowFieldY"
                                         checked={this.state.mirroFlowFieldY}
                                     />
-                                    <label className="form-check-label" htmlFor="mirroFlowFieldY">Mirro Flow Field in y axis:</label>
+                                    <span className="form-check-label" htmlFor="mirroFlowFieldY">Mirro Flow Field in y axis:</span>
                                 </div>
                             </div>
                         </div>
+
+                        <div className='row'>
+                            <div className="col-12">
+                                <div className="form-group">
+                                    <div className="form-check">
+                                        <input type="checkbox"
+                                            className="form-check-input"
+                                            placeholder="Draw Flow Field"
+                                            onChange={this.AlterarDrawFlowField}
+                                            id="drawFlowField"
+                                            checked={this.state.drawFlowField}
+                                        />
+                                        <span className="form-check-label" htmlFor="drawFlowField">Draw Flow Field:</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-
-
             </div>
         )
-    }
+    };
 }
 
 export default App;
