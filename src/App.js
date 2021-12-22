@@ -9,16 +9,16 @@ class App extends React.Component {
         this.state = {
             wight: 0,
             height: 0,
-            text: 'TEXT',
-            textColor: '#000000',
-            backgroundColor: '#ffffff',
+            text: 'METAL',
+            textColor: '#f2f3f4',
+            backgroundColor: '#000000',
             fontSize: 240,
-            flowFieldFactor: 4,
-            flowFieldSeed: 1,
-            particleStartSize: 10,
+            flowFieldFactor: 5.27,
+            flowFieldSeed: 50,
+            particleStartSize: 5,
             particleEndSize: 0,
             particleLifeTime: 100,
-            particleDensity: 40,
+            particleDensity: 18,
             scale: 10,
             mirrorFlowFieldX: true,
             mirroFlowFieldY: false,
@@ -156,6 +156,7 @@ class App extends React.Component {
 
     componentDidMount() {
         this.myP5 = new p5(this.Sketch, this.myRef.current);
+        document.getElementById('body').style.backgroundColor = this.state.backgroundColor;
     }
 
     AlterarTexto = (event) => {
@@ -171,6 +172,7 @@ class App extends React.Component {
     AlterarFundoCor = (event) => {
         this.setState({ backgroundColor: event.target.value });
         this.changed = true;
+        document.getElementById('body').style.backgroundColor = this.state.backgroundColor;
     }
 
     AlterarFlowFieldFactor = (event) => {
@@ -220,7 +222,7 @@ class App extends React.Component {
 
     render() {
         return (
-            <div lassName="container page-container">
+            <div id='body' lassName="container page-container">
 
                 <div className="row">
                     <div className="col-md-12">

@@ -10,15 +10,15 @@
   margin: 0 30vw;
   h1 {
     font-family: "Metal Mania", cursive;
-    font-size: 2rem;
+    font-size: 3rem;
     color: #000;
-    text-shadow: 0 0 10px #fff;
+    text-shadow: 0 0 10px #f2f3f4;
   }
   h3 {
     font-family: "Rock Salt", cursive;
-    font-size: 1rem;
+    font-size: 2rem;
     color: #000;
-    text-shadow: 0 0 10px #fff;
+    text-shadow: 0 0 15px #f2f3f4;
   }
 }
 
@@ -27,8 +27,6 @@
   align-items: center;
   justify-content: center;
   canvas {
-    border: #000 solid 5px;
-    border-radius: 10px;
     margin: 0;
     padding: 0;
   }
@@ -38,12 +36,13 @@
   font-family: "Roboto Slab", serif;
   font-size: 16px;
   width: 900px;
-  margin: 0 auto;
+  margin: 25px auto;
   padding: 25px;
   background-color: rgb(0, 0, 0);
   color: #fff;
-  text-shadow: #fff 0 0 10px;
+  text-shadow: #f2f3f4 0 0 10px;
   border-radius: 10px;
+  box-shadow: 0 0 25px #f2f3f4;
 
   label {
     display: block;
