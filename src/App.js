@@ -15,13 +15,13 @@ class App extends React.Component {
             fontSize: 240,
             flowFieldFactor: 5.27,
             flowFieldSeed: 50,
-            particleStartSize: 5,
+            particleStartSize: 1,
             particleEndSize: 0,
             particleLifeTime: 100,
             particleDensity: 18,
             scale: 10,
             mirrorFlowFieldX: true,
-            mirroFlowFieldY: false,
+            mirroFlowFieldY: true,
             drawFlowField: false,
         }
         this.changed = true;
@@ -33,37 +33,20 @@ class App extends React.Component {
         let cols, rows;
         let font;
         let textPoints = [];
-        const setupParticles = () => {
+        const setupParticles = (offset) => {
             particles = [];
             for (let i = 0; i < textPoints.length; i++) {
                 let px = textPoints[i].x;
                 let py = textPoints[i].y;
                 let p = new Particle(p5,
-                    px,
-                    py,
+                    px+offset.x,
+                    py+offset.y,
                     this.state.particleLifeTime,
                     this.state.particleStartSize,
                     this.state.particleEndSize,
                     p5.color(this.state.textColor));
                 particles.push(p);
             }
-            /*const density = this.state.particleDensity
-            for (let y = 0; y < p5.height / density; y++) {
-                for (let x = 0; x < p5.width / density; x++) {
-
-                    let px = x * density
-                    let py = y * density
-                    let p = new Particle(p5,
-                        px,
-                        py,
-                        this.state.particleLifeTime,
-                        this.state.particleStartSize,
-                        this.state.particleEndSize,
-                        p5.color(this.state.textColor));
-                    particles.push(p);
-
-                }
-            }*/
         }
 
         const setupFlowField = () => {
@@ -126,14 +109,31 @@ class App extends React.Component {
         const reset = () => {
             p5.background(this.state.backgroundColor);
             p5.textFont(font);
-            p5.textSize(this.state.fontSize);
-            p5.textAlign(p5.CENTER, p5.CENTER);
-            let x = p5.width / 2;
-            let y =  p5.height / 2;
+            let fontSize = this.state.fontSize;
+            let x = 0;//p5.width / 2;
+            let y =  p5.height;
+            let particleDensity = this.state.particleDensity/100;
             textPoints = [];
-            textPoints = font.textToPoints(this.state.text, x, y);
+            textPoints = font.textToPoints(this.state.text, x, y, fontSize, {
+                sampleFactor: particleDensity,
+                simplifyThreshold: 0
+            });
+            let textDimensions = p5.createVector(0, p5.height);
+            textPoints.forEach(point => {
+                if(point.x > textDimensions.x){
+                    textDimensions.x = point.x;
+                }
+                if(point.y < textDimensions.y){
+                    textDimensions.y = point.y;
+                }
+            });
+            textDimensions.y = -textDimensions.y+p5.height;
+            let offset = p5.createVector((p5.width-textDimensions.x)/2, -textDimensions.y*2);
+            p5.fill(255,0,255,255);
+            p5.ellipse(offset.x, offset.y, 20, 20);
+
             setupFlowField();
-            setupParticles();
+            setupParticles(offset);
 
         }
 
@@ -357,7 +357,7 @@ class App extends React.Component {
                                     className="form-range"
                                     min={0}
                                     max={50}
-                                    step={1}
+                                    step={0.2}
                                     placeholder="Enter particle start size"
                                     onChange={this.AlterarParticulaTamanhoInicial}
                                     id='particleStartSize'
