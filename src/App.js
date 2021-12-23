@@ -129,8 +129,6 @@ class App extends React.Component {
             });
             textDimensions.y = -textDimensions.y+p5.height;
             let offset = p5.createVector((p5.width-textDimensions.x)/2, -textDimensions.y*2);
-            p5.fill(255,0,255,255);
-            p5.ellipse(offset.x, offset.y, 20, 20);
 
             setupFlowField();
             setupParticles(offset);
