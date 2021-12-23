@@ -56,7 +56,6 @@ export default class Particle {
         this.lifeTime -= 1;
 
         const t = - this.lifeTime / this.lifeTimeMax;
-        if(t < 0.000001) return;
         this.size = this.p5.lerp(this.endSize, this.startSize, t);
     }
 
